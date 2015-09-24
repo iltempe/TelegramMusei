@@ -4,8 +4,8 @@ A simple Telegram Robot used with Openstreetmap to find museums closed to your p
 To use this robot
 - Open a chat with MuseiBot
 - send your position to the robot
-- wait to receive maps and name of Museums near to yo
-- 
+- wait to receive maps and name of Museums near to you
+
 To reuse
 - make a bot with TELEGRAM
 - rename settings-temp.php in settings.php
