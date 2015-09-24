@@ -89,6 +89,9 @@ class mainloop{
 		
 	function location_manager($db,$telegram,$user_id,$chat_id,$location)
 		{
+				date_default_timezone_set('Europe/Rome');
+				$today = date("Y-m-d H:i:s");
+		
 				$lon=$location["longitude"];
 				$lat=$location["latitude"];
 				
@@ -133,7 +136,7 @@ class mainloop{
 				$obj=json_decode($bot_request_message);
 				$id=$obj->result;
 				$id=$id->message_id;
-				$statement = "INSERT INTO ". DB_TABLE_GEO. " (lat,lng,user,text,bot_request_message) VALUES ('" . $lat . "','" . $lon . "','" . $user_id . "',' ','". $id ."')";
+				$statement = "INSERT INTO ". DB_TABLE_GEO. " (lat,lng,user,text,bot_request_message) VALUES ('" . $lat . "','" . $lon . "','" . $user_id . "','" . $today . "','". $id ."')";
             	$db->exec($statement);
 		}
 		
