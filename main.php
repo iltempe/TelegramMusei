@@ -69,7 +69,7 @@ class mainloop{
 				 $log=$today. ";wrong command sent;" .$chat_id. "\n";
 			 }		
 			//aggiorna tastiera
-			//$this->create_keyboard($telegram,$chat_id);
+			$this->update_mess($telegram,$chat_id);
 			
 			//for debug
 			//$this->location_manager($db,$telegram,$user_id,$chat_id,$location);
@@ -81,9 +81,10 @@ class mainloop{
 
 
 	// Crea la tastiera
-	 function create_keyboard($telegram, $chat_id)
+	 function update_mess($telegram, $chat_id)
 		{
-				//TBD
+			$content = array('chat_id' => $chat_id, 'text' => utf8_encode("Invia la tua posizione con la molletta in basso a sinistra per cercare un museo nelle vicinanze"));
+			$bot_request_message=$telegram->sendMessage($content);
 		}
 		
 	function location_manager($db,$telegram,$user_id,$chat_id,$location)
@@ -97,7 +98,6 @@ class mainloop{
 				
 				//prelevo dati da OSM sulla base della mia posizione
 				$osm_data=give_osm_data($lat,$lon);
-				//echo $osm_data;
 				
 				//rispondo inviando i dati di Openstreetmap
 				$osm_data_dec = simplexml_load_string($osm_data);
@@ -115,13 +115,19 @@ class mainloop{
 					} 
 					$content_geo = array('chat_id' => $chat_id, 'latitude' =>$osm_element['lat'], longitude =>$osm_element['lon']);
 					$telegram->sendLocation($content_geo);
-					//print_r($osm_element['lat']);
-					//print_r($osm_element['lon']);
 				 } 
 				
 				//crediti dei dati
-				$content = array('chat_id' => $chat_id, 'text' => utf8_encode("questi sono i musei più vicini (dati forniti tramite OpenStreetMap. Licenza ODbL © OpenStreetMap contributors)"));
-				$bot_request_message=$telegram->sendMessage($content);				
+				print_r($osm_data_dec->node);
+				if((bool)$osm_data_dec->node)
+				{
+					$content = array('chat_id' => $chat_id, 'text' => utf8_encode("Questi sono i musei vicini a te (dati forniti tramite OpenStreetMap. Licenza ODbL © OpenStreetMap contributors)"));
+					$bot_request_message=$telegram->sendMessage($content);				
+				}else
+				{
+					$content = array('chat_id' => $chat_id, 'text' => utf8_encode("Non ci sono sono musei vicini, mi spiace! Se ne conosci uno nelle vicinanze mappalo su www.openstreetmap.org"));
+					$bot_request_message=$telegram->sendMessage($content);	
+				}
 				
 				//memorizzare nel DB
 				$obj=json_decode($bot_request_message);
