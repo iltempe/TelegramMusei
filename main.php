@@ -104,24 +104,30 @@ class mainloop{
 				
 				//rispondo inviando i dati di Openstreetmap
 				$osm_data_dec = simplexml_load_string($osm_data);
-				
 				//per ogni nodo prelevo coordinate e nome
 				foreach ($osm_data_dec->node as $osm_element) {
-
+					$nome="";					
 					foreach ($osm_element->tag as $key) {
+
 						if ($key['k']=='name')
 						{
 							$nome=utf8_encode($key['v']);
 							$content = array('chat_id' => $chat_id, 'text' =>$nome);
 							$telegram->sendMessage($content);
 						}
-					} 
-					$content_geo = array('chat_id' => $chat_id, 'latitude' =>$osm_element['lat'], longitude =>$osm_element['lon']);
+					}
+					//gestione musei senza il tag nome
+					if($nome=="")
+					{
+							$nome=utf8_encode("Museo non identificato su Openstreetmap");
+							$content = array('chat_id' => $chat_id, 'text' =>$nome);
+							$telegram->sendMessage($content);
+					}					
+					$content_geo = array('chat_id' => $chat_id, 'latitude' =>$osm_element['lat'], 'longitude' =>$osm_element['lon']);
 					$telegram->sendLocation($content_geo);
 				 } 
 				
 				//crediti dei dati
-				print_r($osm_data_dec->node);
 				if((bool)$osm_data_dec->node)
 				{
 					$content = array('chat_id' => $chat_id, 'text' => utf8_encode("Questi sono i musei vicini a te (dati forniti tramite OpenStreetMap. Licenza ODbL © OpenStreetMap contributors)"));
